@@ -1,0 +1,30 @@
+name: Run index.js every 1 minutes
+
+on:
+  schedule:
+    - cron: "*/1 * * * *"
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Node.js dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies (only if missing)
+        run: npm ci --omit=dev # Installs only production dependencies (skips TypeScript)
+
+      - name: Run compiled script
+        env:
+          MY_SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
+        run: node dist/index.js
