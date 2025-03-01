@@ -27,4 +27,4 @@ jobs:
       - name: Run compiled script
         env:
           MY_SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
-        run: node src/index.js
+        run: node src/index.cjs
